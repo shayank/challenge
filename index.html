@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+  <head>
+    <script src="./scripts/calculator.js"></script>
+    <script src="./scripts/lineDrawer.js"></script>
+    <script src="./scripts/peterAlgorithm.js"></script>
+    <style>
+      body {
+        text-align: center;
+      }
+      .container {
+        width: 410px;
+        margin: 20px auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div>term: <input id="inpTerm" type="text"></div>
+      <div><input id="btnCalc" type="button" value="CALCULATE"></div>
+      <div id="resultCalc"></div>
+      <hr />
+      <div>peter: <input id="inpPeter" type="text"></div>
+      <div><input id="btnPeter" type="button" value="FIND"></div>
+      <div id="resultPeter"></div>
+    </div>
+  </body>
+  <script>
+    let myChart;
+    // add event listener
+    document.getElementById("btnCalc").addEventListener('click', onBtnClacClick);
+    document.getElementById("btnPeter").addEventListener('click', onBtnPeterClick);
+    /**
+    * on button calc clicked
+    */
+    function onBtnClacClick(e) {
+      // get calc value
+      const inpTerm = document.getElementById("inpTerm").value.toLowerCase();
+      // get result elem
+      const $resCalc = document.getElementById("resultCalc");
+      // validate calc input
+      const regexCalc = /^[0-9/*+\-().x ]*$/;
+      if (!regexCalc.test(inpTerm)) {
+        $resCalc.innerText = "invalid term!";
+        return;
+      }
+      // show calc result
+      try {
+        if (inpTerm.match(/x/)) {
+          const dots = lineDrawer(inpTerm);
+          const $ctx = $resCalc.appendChild(document.createElement('canvas'));
+          $ctx.setAttribute('id', 'myChart');
+          $ctx.setAttribute('width', 400);
+          $ctx.setAttribute('height', 400);
+          const ctx = $ctx.getContext('2d');
+          myChart && myChart.destroy();
+          myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: dots.map(d => d.x),
+              datasets: [{
+                label: 'Line Chart',
+                data: dots.map(d => d.y),
+                fill: false,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+              }]
+            }
+          });
+        } else {
+          $resCalc.innerText = calculator(inpTerm);
+        }
+      } catch (e) {
+        console.log(e);
+        $resCalc.innerText = 'invalid term!';
+      }
+    }
+    /**
+    * on button peter clicked
+    */
+    function onBtnPeterClick(e) {
+      // get peter value
+      const inpPeter = document.getElementById("inpPeter").value;
+      // get result peter elem
+      const $resPeter = document.getElementById("resultPeter");
+      // parse input
+      const peterNum = parseFloat(inpPeter);
+      // validate peter input
+      if (isNaN(peterNum) || typeof peterNum !== 'number') {
+        $resPeter.innerText = "input invalid!";
+        return;
+      }
+      // show peter result
+      $resPeter.innerText = peterAlgorithm(peterNum);
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
+</html>
